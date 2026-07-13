@@ -12,6 +12,9 @@ import { fileURLToPath } from "node:url";
 
 const BENCH_DIR = dirname(fileURLToPath(import.meta.url));
 const RESULTS = join(BENCH_DIR, "results");
+const REPORT_OUT = process.env.BENCH_REPORT_OUTPUT
+  ? join(BENCH_DIR, process.env.BENCH_REPORT_OUTPUT)
+  : join(BENCH_DIR, "report.md");
 
 const readJSON = (p) => (existsSync(p) ? JSON.parse(readFileSync(p, "utf8")) : null);
 const median = (xs) => {
@@ -119,5 +122,6 @@ for (const t of trials.sort((a, b) => (a.arm + a.trial).localeCompare(b.arm + b.
 }
 md += `\n_Live dashboard: http://localhost:3000/d/inner-vs-outer_\n`;
 
-writeFileSync(join(BENCH_DIR, "report.md"), md);
-console.log(`aggregate: wrote bench/report.md (${trials.length} trials: ${byArm.inner.length} inner, ${byArm.outer.length} outer)`);
+writeFileSync(REPORT_OUT, md);
+const reportName = REPORT_OUT.split("/").pop();
+console.log(`aggregate: wrote bench/${reportName} (${trials.length} trials: ${byArm.inner.length} inner, ${byArm.outer.length} outer)`);

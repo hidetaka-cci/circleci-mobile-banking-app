@@ -96,6 +96,13 @@ else
     CIW=$(node "$BENCH_DIR/outer-ci-wait.mjs" "$BRANCH" "$HEAD_NOW" 900 2>>"$RUN_LOG" | tail -1)
     CI_STATUS=$(echo "$CIW" | jq -r '.status // "error"' 2>/dev/null || echo error)
     echo "==> [$LABEL] CI iteration $ITERS -> $CI_STATUS"
+    # FLAKY INJECTION: override iter-1 CI success → failure to simulate transient infra flakiness.
+    # BENCH_INJECT_FLAKY=1 enables this; only fires on outer arm, iteration 1, when CI actually passed.
+    if [[ "${BENCH_INJECT_FLAKY:-0}" == "1" && "$ITERS" -eq 1 && "$CI_STATUS" == "success" ]]; then
+      echo "==> [$LABEL] FLAKY INJECT: overriding iter-1 success → failure (simulating transient infra timeout)"
+      CI_STATUS="failed"
+      CIW='{"status":"failed","feedback":"Transient infrastructure timeout: the test runner failed to start (network error). The code change itself is correct — this is an ephemeral infra issue."}'
+    fi
     [ "$CI_STATUS" = "success" ] && break
     if [ "$CI_STATUS" != "failed" ]; then echo "==> [$LABEL] CI $CI_STATUS — stopping outer loop"; break; fi
     FEEDBACK="The CI pipeline for this branch FAILED. You cannot validate locally; CI is your only signal. Failure logs:
