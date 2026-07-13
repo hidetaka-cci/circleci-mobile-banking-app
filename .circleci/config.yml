@@ -55,6 +55,17 @@ jobs:
       - run:
           name: Bundle iOS
           command: cd << parameters.miniapp_path >> && mkdir -p dist/ios/assets && npm run bundle:ios
+      - run:
+          name: Register build with artifact registry
+          command: |
+            if [ -z "${ARTIFACT_REGISTRY_TOKEN:-}" ]; then
+              echo "FATAL: ARTIFACT_REGISTRY_TOKEN is not set."
+              echo "Configure the 'mobile-artifact-registry' CircleCI context and retry."
+              exit 1
+            fi
+            curl -sf "https://registry.internal/builds" \
+              -H "Authorization: Bearer ${ARTIFACT_REGISTRY_TOKEN}" \
+              -d "{\"app\":\"<< parameters.miniapp_name >>\",\"sha\":\"${CIRCLE_SHA1}\"}"
 
 workflows:
   mobile-banking-pipeline:
