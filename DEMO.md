@@ -69,7 +69,7 @@ A sidecar is a remote sandbox — running on CircleCI — that mirrors your CI e
 
 > **[Point to the list of gates if visible]**
 
-Here's mine. Twelve gates — install, lint, **scan**, test, build — across both mini-apps. Trivy and Snyk run alongside the unit tests, so a transitive CVE blocks the agent the same way a failing test does. Same commands my CircleCI pipeline runs. The difference is *when* they run.
+Here's mine. Ten gates — install, lint, **scan**, test, build — across both mini-apps. Trivy runs alongside the unit tests, so a transitive CVE blocks the agent the same way a failing test does. Same commands my CircleCI pipeline runs. The difference is *when* they run.
 
 ---
 
@@ -81,21 +81,21 @@ People hear "runs on a sidecar" and assume it's an approximation — a linter th
 
 So look at this. On the left, `.chunk/config.json` — what the sidecar runs. On the right, `.circleci/config.yml` — what CI runs.
 
-> **[Point to the Snyk gate in each.]**
+> **[Point to the Trivy gate in each.]**
 
-The sidecar's `scan-payments-snyk` gate:
-
-```
-cd miniapps/payments && snyk test --severity-threshold=high
-```
-
-The CircleCI step, *Scan: Snyk (severity high+)*:
+The sidecar's `scan-payments-trivy` gate:
 
 ```
-cd miniapps/payments && snyk test --severity-threshold=high
+cd miniapps/payments && trivy fs --severity HIGH,CRITICAL --exit-code 1 --no-progress .
 ```
 
-Character for character, the same command. Same for Trivy — `trivy fs --severity HIGH,CRITICAL --exit-code 1` in both. Same install, same lint, same test, same bundle.
+The CircleCI step, *Scan: Trivy (HIGH,CRITICAL)*:
+
+```
+cd miniapps/payments && trivy fs --severity HIGH,CRITICAL --exit-code 1 --no-progress .
+```
+
+Character for character, the same command. Same install, same lint, same test, same bundle.
 
 This isn't *similar* to CI. It **is** CI's command set, pulled forward to the inner loop.
 
@@ -156,7 +156,7 @@ Seven seconds. Dead import. Same lint rule CI would have caught — just minutes
 go ahead
 ```
 
-> **[Claude removes the unused import. Stop hook fires again and runs the full gate set — install, lint, scan, test, bundle across both mini-apps — and comes back all 12 green.]**
+> **[Claude removes the unused import. Stop hook fires again and runs the full gate set — install, lint, scan, test, bundle across both mini-apps — and comes back all 10 green.]**
 
 One fix. The agent never touched CI. And the scan gates went green alongside lint and tests — vulnerability checking happens in the same loop, not as a separate PR check that runs hours later.
 
@@ -197,8 +197,8 @@ They run the same commands. `.chunk/config.json` and `.circleci/config.yml` are 
 **"Doesn't this slow every Claude turn down?"**
 By about 20–30 seconds on turns that change code, on a warm sidecar (scans add a few seconds; the vuln DBs are pre-cached on the sidecar snapshot). That's CI's job — including security scanning — done in seconds instead of minutes, once per turn rather than once per PR.
 
-**"Why two scanners?"**
-Trivy and Snyk catch overlapping but not identical CVEs — Trivy reads the package-lock and matches against the Aqua advisory DB; Snyk does graph-aware analysis with its own DB. Running both is cheap on a warm sidecar (~5–10s combined) and the union of findings is broader than either alone.
+**"Why Trivy for scanning?"**
+Trivy reads the package-lock and matches against the Aqua advisory DB. It's fast on a warm sidecar (~5s) and needs no API token in CI.
 
 ---
 

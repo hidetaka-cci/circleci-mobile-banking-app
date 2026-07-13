@@ -22,7 +22,6 @@
       "Bash(./node_modules/.bin/*)",
       "Bash(node_modules/.bin/*)",
       "Bash(trivy:*)",
-      "Bash(snyk:*)",
       "Bash(chunk:*)"
     ]
   }

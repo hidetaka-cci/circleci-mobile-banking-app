@@ -36,7 +36,7 @@ DIRTY="$(git status --porcelain --untracked-files=no)"
 START_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 git config push.autoSetupRemote true   # so the agent's bare `git push` works on a new branch
 
-echo "=== building bench/base (reduced gate set: Snyk dropped, Trivy kept) ==="
+echo "=== building bench/base ==="
 bash "$BENCH_DIR/scenario/make-base.sh"
 export BENCH_BASE_REF=bench/base
 

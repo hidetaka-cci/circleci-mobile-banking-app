@@ -2,10 +2,7 @@ version: 2.1
 
 # Demo pipeline — mirrors the Chunk Sidecar gates 1:1 so that "sidecar green"
 # reliably means "CI green". Gate order matches .chunk/config.json:
-# install → lint → scan (Trivy + Snyk) → test → bundle, for each mini-app.
-#
-# The scan steps need SNYK_TOKEN, provided via the AwesomeCICD `derry-snyk` context.
-# Snyk reads SNYK_TOKEN from the environment, so no `snyk auth` step is required.
+# install → lint → scan (Trivy) → test → bundle, for each mini-app.
 #
 # A fuller iOS pipeline (OIDC, Fastlane, TestFlight, App Store) lives on
 # AwesomeCICD/circleci-demo-ios:bcp-demo for reference.
@@ -36,10 +33,9 @@ jobs:
           name: Lint
           command: cd << parameters.miniapp_path >> && npm run lint
       - run:
-          name: Install scanners (Trivy + Snyk)
+          name: Install scanner (Trivy)
           command: |
             curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo sh -s -- -b /usr/local/bin
-            sudo npm install -g snyk
       - restore_cache:
           keys:
             - v1-trivy-db-
@@ -50,9 +46,6 @@ jobs:
           key: v1-trivy-db-{{ epoch }}
           paths:
             - ~/.cache/trivy
-      - run:
-          name: "Scan: Snyk (severity high+)"
-          command: cd << parameters.miniapp_path >> && snyk test --severity-threshold=high
       - run:
           name: Test (CircleCI Smarter Testing — impact analysis + auto-rerun)
           command: cd << parameters.miniapp_path >> && circleci run testsuite "ci tests"
@@ -68,11 +61,9 @@ workflows:
     jobs:
       - validate-miniapp:
           name: "Payments"
-          context: derry-snyk
           miniapp_name: payments
           miniapp_path: miniapps/payments
       - validate-miniapp:
           name: "Transfers"
-          context: derry-snyk
           miniapp_name: transfers
           miniapp_path: miniapps/transfers

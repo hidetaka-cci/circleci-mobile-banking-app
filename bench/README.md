@@ -21,8 +21,7 @@ each. The *only* difference is **how each validates**:
 | Config | `env/settings-inner.json` | `env/settings-outer.json` |
 
 Both run the **same gate set** (lint + Trivy + tests + iOS bundle, for both
-mini-apps). Snyk is dropped for the benchmark (expired CI credential, which an
-agent can't fix) — applied equally to both arms so the comparison stays fair.
+mini-apps) — applied equally to both arms so the comparison stays fair.
 
 ## How the data is captured
 

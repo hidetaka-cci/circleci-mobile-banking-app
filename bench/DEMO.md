@@ -50,10 +50,8 @@ The only thing we changed was **how each agent validates**:
 Same task. Same model. Same gates. One difference: *when and where validation
 happens.* That's the whole experiment.
 
-> Honesty note: for this run we used a reduced but identical gate set (lint +
-> Trivy + tests + bundle) on both arms — the Snyk gate was dropped because its
-> CI credential was expired, and an agent can't fix a credential. Both arms ran
-> the exact same gates, so the comparison stays fair.
+> Honesty note: both arms ran the exact same gate set (lint + Trivy + tests +
+> bundle), so the comparison stays fair.
 
 ---
 
@@ -154,8 +152,6 @@ So the bottom line:
   measurement-tooling artifact (a stray validation collided with it on the
   shared sidecar). We
   report **medians**, which are robust to it; it doesn't move the headline.
-- **Reduced gate set** (Snyk dropped for a dead credential) — applied equally
-  to both arms, so the comparison is fair.
 
 **Obvious next experiment:** rerun with a deliberately harder, multi-file task
 that *needs* a couple of fix cycles — that's where the outer loop's CI-minutes

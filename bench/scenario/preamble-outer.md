@@ -1,5 +1,5 @@
 You are working on the current git branch. You CANNOT validate locally: npm,
-jest, eslint, the iOS bundler, trivy, snyk, and chunk are all unavailable to
+jest, eslint, the iOS bundler, trivy, and chunk are all unavailable to
 you. The only way to learn whether your change is correct is the traditional
 outer loop — commit, push, and let CircleCI run the gates (lint, Trivy, tests,
 iOS bundle for both mini-apps).

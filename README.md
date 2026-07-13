@@ -46,11 +46,11 @@ Defined in [`.chunk/config.json`](./.chunk/config.json). Same order for the side
 |---|---|---|
 | Install | `install-payments`, `install-transfers` | `npm ci` for each miniapp |
 | Lint | `lint-payments`, `lint-transfers` | ESLint — catches `no-unused-vars` and friends |
-| Scan | `scan-payments-trivy`, `scan-transfers-trivy`, `scan-payments-snyk`, `scan-transfers-snyk` | Trivy + Snyk — catches HIGH/CRITICAL CVEs in transitive deps before they hit CI |
+| Scan | `scan-payments-trivy`, `scan-transfers-trivy` | Trivy — catches HIGH/CRITICAL CVEs in transitive deps before they hit CI |
 | Test | `test-payments`, `test-transfers` | Jest — catches behaviour regressions |
 | Bundle | `bundle-payments`, `bundle-transfers` | `react-native bundle` — catches Metro errors |
 
-All twelve commands are marked `remote: true` and execute on the sidecar — install through bundle, scans included. The miniapp `package.json` files carry `overrides` blocks pinning a handful of transitive deps (`@babel/plugin-transform-modules-systemjs`, `shell-quote`, `fast-xml-parser`) to versions that clear both scanners. Those overrides are the load-bearing piece that keeps the gates green.
+All ten commands are marked `remote: true` and execute on the sidecar — install through bundle, scans included. The miniapp `package.json` files carry `overrides` blocks pinning a handful of transitive deps (`@babel/plugin-transform-modules-systemjs`, `shell-quote`, `fast-xml-parser`) to versions that clear Trivy. Those overrides are the load-bearing piece that keeps the gates green.
 
 A failing gate blocks the validation run, so the agent sees feedback before its turn ends.
 
@@ -106,12 +106,8 @@ cd circleci-mobile-banking-app
 # 3. Provision your own Chunk sidecar (one-time, ~30s)
 chunk sidecar create --org-id <YOUR_ORG_ID> --name circleci-mobile-banking-app
 
-# 4. Install the scanners on the sidecar (one-time; snapshot afterwards if you want to skip this next time)
+# 4. Install Trivy on the sidecar (one-time; snapshot afterwards if you want to skip this next time)
 chunk validate --remote --cmd "curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo sh -s -- -b /usr/local/bin"
-chunk validate --remote --cmd "curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash - && sudo apt-get install -y nodejs"
-chunk validate --remote --cmd "sudo npm install -g snyk"
-# Snyk also needs auth on the sidecar — run this from a separate terminal so your token doesn't end up in an AI session:
-#   chunk sidecar exec --command "snyk auth <YOUR_SNYK_TOKEN>"
 
 # 5. Warm the sidecar
 chunk validate                       # expect green in ~30s (longer first time as trivy downloads its vuln DB)
@@ -143,6 +139,6 @@ Keep `main` green so any teammate can clone and run.
 
 The active `.circleci/config.yml` mirrors the sidecar gates **1:1** — install / lint / scan / test / bundle, for both mini-apps, in the same order. That's the whole point: when the sidecar says green, CI agrees, and vice versa. The shift-left story is purely about *when* the gates run (inner loop vs. PR), not *which* gates run.
 
-> **Note:** the CI scan steps need `SNYK_TOKEN`, supplied via the AwesomeCICD `snyk` context. Snyk reads the token from the environment, so no `snyk auth` step is needed in CI. Trivy needs no secret. The Trivy vuln DB is cached between runs to keep stage-day fast.
+> **Note:** Trivy needs no secret. The Trivy vuln DB is cached between runs to keep stage-day fast.
 
-For a fuller mobile pipeline reference (macOS native build, Snyk dependency scan via OIDC at the PR layer, Fastlane to TestFlight, manual approval, App Store submission), see [`AwesomeCICD/circleci-demo-ios:bcp-demo`](https://github.com/AwesomeCICD/circleci-demo-ios/tree/bcp-demo) — same architecture, full pipeline, all the orbs and contexts.
+For a fuller mobile pipeline reference (macOS native build, Fastlane to TestFlight, manual approval, App Store submission), see [`AwesomeCICD/circleci-demo-ios:bcp-demo`](https://github.com/AwesomeCICD/circleci-demo-ios/tree/bcp-demo) — same architecture, full pipeline, all the orbs and contexts.

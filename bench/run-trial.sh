@@ -32,8 +32,7 @@ BRANCH="bench/${LABEL}"
 RESULT_JSON="$RESULTS/${LABEL}.json"
 RUN_LOG="$RESULTS/${LABEL}.log"
 
-# cut each trial from the reduced-gate base branch (built by make-base.sh), so
-# both arms validate the same Snyk-free gate set. Override with BENCH_BASE_REF.
+# cut each trial from bench/base (built by make-base.sh). Override with BENCH_BASE_REF.
 BASE_REF="${BENCH_BASE_REF:-bench/base}"
 git rev-parse --verify -q "$BASE_REF" >/dev/null || { echo "ERROR: $BASE_REF missing — run bench/scenario/make-base.sh"; exit 1; }
 echo "==> [$LABEL] fresh branch $BRANCH from $BASE_REF"
