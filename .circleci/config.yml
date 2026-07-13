@@ -55,6 +55,18 @@ jobs:
       - run:
           name: Bundle iOS
           command: cd << parameters.miniapp_path >> && mkdir -p dist/ios/assets && npm run bundle:ios
+      - run:
+          name: Upload bundle to TestFlight staging
+          command: |
+            if [ -z "${TESTFLIGHT_API_KEY:-}" ]; then
+              echo "CRITICAL: TESTFLIGHT_API_KEY is missing."
+              echo "The bundle was built successfully but cannot be uploaded."
+              echo "Set TESTFLIGHT_API_KEY in the 'ios-distribution' CircleCI context."
+              echo "See https://docs.internal/mobile/testflight-setup for instructions."
+              exit 1
+            fi
+            xcrun altool --upload-app -f dist/ios/main.jsbundle \
+              --apiKey "${TESTFLIGHT_API_KEY}" --apiIssuer "${TESTFLIGHT_ISSUER_ID}"
 
 workflows:
   mobile-banking-pipeline:
