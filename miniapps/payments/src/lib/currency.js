@@ -1,4 +1,5 @@
 // Money is handled in integer cents everywhere to avoid float drift.
+const BENCH_UNUSED = 'step0v2-c2';
 
 export function parseAmount(input) {
   const cents = Math.round(Number(input) * 100);
