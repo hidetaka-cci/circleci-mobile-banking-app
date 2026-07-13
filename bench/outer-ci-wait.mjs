@@ -11,7 +11,7 @@
 // instead of relying on the agent to idle-poll (which it won't do in headless).
 const [, , BRANCH, REVISION, MAX] = process.argv;
 const TOKEN = process.env.CIRCLE_TOKEN || process.env.CIRCLECI_TOKEN;
-const SLUG = "gh/AwesomeCICD/circleci-mobile-banking-app";
+const SLUG = "gh/hidetaka-cci/circleci-mobile-banking-app";
 const API = "https://circleci.com/api/v2";
 const V1 = "https://circleci.com/api/v1.1/project/" + SLUG;
 const maxWaitSec = Number(MAX || 900);
