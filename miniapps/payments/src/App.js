@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+const BENCH_UNUSED = 'step0v2-a1';
 
 const App = () => (
   <View style={styles.container}>
