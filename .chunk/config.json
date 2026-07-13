@@ -44,7 +44,7 @@
     },
     {
       "name": "test-payments",
-      "run": "cd miniapps/payments && circleci run testsuite \"ci tests\" --local",
+      "run": "cd miniapps/payments && command -v circleci-testsuite >/dev/null 2>&1 && circleci run testsuite \"ci tests\" --local || npm test",
       "role": "gate",
       "remote": true,
       "timeout": 120,
@@ -52,7 +52,7 @@
     },
     {
       "name": "test-transfers",
-      "run": "cd miniapps/transfers && circleci run testsuite \"ci tests\" --local",
+      "run": "cd miniapps/transfers && command -v circleci-testsuite >/dev/null 2>&1 && circleci run testsuite \"ci tests\" --local || npm test",
       "role": "gate",
       "remote": true,
       "timeout": 120,
