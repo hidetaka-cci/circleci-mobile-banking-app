@@ -22,7 +22,7 @@ TRIAL="${2:?usage: run-trial.sh <inner|outer> <trial>}"
 
 BENCH_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$BENCH_DIR/.." && pwd)"
-RESULTS="$BENCH_DIR/results"
+RESULTS="${BENCH_RESULTS_DIR:-$BENCH_DIR/results}"
 PUSHGW="${PUSHGW:-http://localhost:9091}"
 mkdir -p "$RESULTS"
 cd "$REPO_ROOT"

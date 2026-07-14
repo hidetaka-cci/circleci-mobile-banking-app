@@ -6,12 +6,12 @@
 //   <label>.json          claude --output-format json result (cost, turns, tokens)
 //   <label>.metrics.json  runner (wall_seconds, commits, claude_rc)
 //   <label>.ci.json       CircleCI (ci_seconds, ci_pipelines)  [optional]
-import { readdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
+import { readdirSync, readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const BENCH_DIR = dirname(fileURLToPath(import.meta.url));
-const RESULTS = join(BENCH_DIR, "results");
+const RESULTS = process.env.BENCH_RESULTS_DIR || join(BENCH_DIR, "results");
 const REPORT_OUT = process.env.BENCH_REPORT_OUTPUT
   ? join(BENCH_DIR, process.env.BENCH_REPORT_OUTPUT)
   : join(BENCH_DIR, "report.md");
@@ -122,6 +122,15 @@ for (const t of trials.sort((a, b) => (a.arm + a.trial).localeCompare(b.arm + b.
 }
 md += `\n_Live dashboard: http://localhost:3000/d/inner-vs-outer_\n`;
 
+// Preserve any manually-written Analysis section that follows the auto-generated content.
+const ANALYSIS_MARKER = "\n---\n\n## Analysis & Caveats";
+if (existsSync(REPORT_OUT)) {
+  const existing = readFileSync(REPORT_OUT, "utf8");
+  const cut = existing.indexOf(ANALYSIS_MARKER);
+  if (cut !== -1) md += existing.slice(cut);
+}
+const dir = REPORT_OUT.slice(0, REPORT_OUT.lastIndexOf("/"));
+if (dir) mkdirSync(dir, { recursive: true });
 writeFileSync(REPORT_OUT, md);
 const reportName = REPORT_OUT.split("/").pop();
 console.log(`aggregate: wrote bench/${reportName} (${trials.length} trials: ${byArm.inner.length} inner, ${byArm.outer.length} outer)`);
