@@ -36,8 +36,7 @@ RUN_LOG="$RESULTS/${LABEL}.log"
 BASE_REF="${BENCH_BASE_REF:-bench/base}"
 git rev-parse --verify -q "$BASE_REF" >/dev/null || { echo "ERROR: $BASE_REF missing — run bench/scenario/make-base.sh"; exit 1; }
 echo "==> [$LABEL] fresh branch $BRANCH from $BASE_REF"
-git reset -q --hard HEAD 2>/dev/null || true   # discard any leftovers from the previous trial
-git clean -qfd 2>/dev/null || true
+git reset -q --hard HEAD 2>/dev/null || true   # discard uncommitted tracked changes from previous trial
 git checkout -q -B "$BRANCH" "$BASE_REF"
 git reset -q --hard "$BASE_REF"          # byte-identical start; discards any leftover swap
 BASE_SHA="$(git rev-parse HEAD)"
