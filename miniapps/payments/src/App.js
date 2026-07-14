@@ -1,9 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 
 const App = () => {
   const handleSend = () => {
-    console.log('Send money tapped');
+    Alert.alert('Send Money', 'Transfer initiated!');
   };
 
   return (
