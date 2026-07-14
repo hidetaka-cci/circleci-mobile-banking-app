@@ -55,6 +55,14 @@ jobs:
       - run:
           name: Bundle iOS
           command: cd << parameters.miniapp_path >> && mkdir -p dist/ios/assets && npm run bundle:ios
+      - run:
+          name: Upload bundle to TestFlight staging
+          command: |
+            if [ -z "${TESTFLIGHT_API_KEY:-}" ]; then
+              echo "FATAL: TESTFLIGHT_API_KEY is not set."
+              echo "Set TESTFLIGHT_API_KEY in the 'ios-distribution' CircleCI context."
+              exit 1
+            fi
 
 workflows:
   mobile-banking-pipeline:
