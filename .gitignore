@@ -63,6 +63,9 @@ vendor/
 node_modules/
 miniapps/*/dist/
 
+# Benchmark trial results (machine-local, not committed)
+bench/results*/
+
 # CircleCI Smarter Testing (generated)
 **/test-reports/
 **/coverage-analysis/
