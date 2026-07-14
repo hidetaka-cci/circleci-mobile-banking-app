@@ -25,6 +25,23 @@ const median = (xs) => {
 };
 const fmt = (x, d = 2) => (Number.isFinite(x) ? x.toFixed(d) : "—");
 
+// Sum token usage across all iter*.json files (or fall back to label.json for single-pass inner).
+// Cost and turns come from metrics.json which run-trial.sh already sums over all iterations.
+const sumTokens = (label) => {
+  const allFiles = readdirSync(RESULTS);
+  const iters = allFiles.filter((f) => f.startsWith(`${label}.iter`) && f.endsWith(".json"));
+  const sources = iters.length ? iters : [`${label}.json`];
+  let inp = 0, out = 0, cr = 0, cc = 0;
+  for (const src of sources) {
+    const u = (readJSON(join(RESULTS, src)) || {}).usage || {};
+    inp += u.input_tokens || 0;
+    out += u.output_tokens || 0;
+    cr  += u.cache_read_input_tokens || 0;
+    cc  += u.cache_creation_input_tokens || 0;
+  }
+  return { total: inp + out + cr + cc, out_tokens: out };
+};
+
 // collect trials from metrics sidecars (one per completed trial)
 const trials = [];
 for (const f of readdirSync(RESULTS).filter((f) => f.endsWith(".metrics.json"))) {
@@ -33,17 +50,14 @@ for (const f of readdirSync(RESULTS).filter((f) => f.endsWith(".metrics.json")))
   const m = readJSON(join(RESULTS, f)) || {};
   const r = readJSON(join(RESULTS, `${label}.json`)) || {};
   const ci = readJSON(join(RESULTS, `${label}.ci.json`)) || {};
-  const u = r.usage || {};
-  const tokens =
-    (u.input_tokens || 0) + (u.output_tokens || 0) +
-    (u.cache_read_input_tokens || 0) + (u.cache_creation_input_tokens || 0);
+  const { total: tokens, out_tokens } = sumTokens(label);
   trials.push({
     arm: m.arm, trial: m.trial,
     wall: m.wall_seconds,
-    cost: r.total_cost_usd ?? 0,
-    turns: r.num_turns ?? 0,
+    cost: m.cost_usd ?? r.total_cost_usd ?? 0,   // metrics.json has multi-iter sum
+    turns: m.turns ?? r.num_turns ?? 0,            // metrics.json has multi-iter sum
     tokens,
-    out_tokens: u.output_tokens || 0,
+    out_tokens,
     ci_min: (ci.ci_seconds ?? NaN) / 60,
     pipelines: ci.ci_pipelines ?? NaN,
     is_error: m.is_error === true || r.is_error === true,
