@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+const P1_UNUSED = 'p1-a1';
 
 const App = () => (
   <View style={styles.container}>
