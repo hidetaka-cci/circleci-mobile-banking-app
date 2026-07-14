@@ -10,10 +10,10 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const BENCH_DIR = dirname(fileURLToPath(import.meta.url));
-const RESULTS = join(BENCH_DIR, "results");
+const RESULTS = process.env.BENCH_RESULTS_DIR || join(BENCH_DIR, "results");
 const PUSHGW = process.env.PUSHGW || "http://localhost:9091";
 const TOKEN = process.env.CIRCLE_TOKEN || process.env.CIRCLECI_TOKEN;
-const SLUG = "gh/AwesomeCICD/circleci-mobile-banking-app";
+const SLUG = "gh/hidetaka-cci/circleci-mobile-banking-app";
 const API = "https://circleci.com/api/v2";
 
 if (!TOKEN) {

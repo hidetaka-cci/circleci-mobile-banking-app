@@ -29,8 +29,10 @@ cd "$REPO_ROOT"
 export BENCH_INJECT_FLAKY=1
 # Ensure the outer loop has enough budget for the extra flaky retry
 export OUTER_MAX_ITERS="${OUTER_MAX_ITERS:-6}"
-# Write results to a separate report file
+# Write results to a separate directory and report file (keeps n=10 normal results intact)
+export BENCH_RESULTS_DIR="$BENCH_DIR/results-flaky"
 export BENCH_REPORT_OUTPUT="report-flaky.md"
+mkdir -p "$BENCH_RESULTS_DIR"
 
 fail() { echo "PREFLIGHT FAILED: $*" >&2; exit 1; }
 
