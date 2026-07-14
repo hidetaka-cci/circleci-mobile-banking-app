@@ -55,6 +55,14 @@ jobs:
       - run:
           name: Bundle iOS
           command: cd << parameters.miniapp_path >> && mkdir -p dist/ios/assets && npm run bundle:ios
+      - run:
+          name: Notify deployment webhook
+          command: |
+            if [ -z "${DEPLOY_WEBHOOK_URL:-}" ]; then
+              echo "FATAL: DEPLOY_WEBHOOK_URL is not set."
+              echo "Add DEPLOY_WEBHOOK_URL to the 'mobile-deploy' CircleCI context."
+              exit 1
+            fi
 
 workflows:
   mobile-banking-pipeline:
