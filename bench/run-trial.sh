@@ -36,6 +36,8 @@ RUN_LOG="$RESULTS/${LABEL}.log"
 BASE_REF="${BENCH_BASE_REF:-bench/base}"
 git rev-parse --verify -q "$BASE_REF" >/dev/null || { echo "ERROR: $BASE_REF missing — run bench/scenario/make-base.sh"; exit 1; }
 echo "==> [$LABEL] fresh branch $BRANCH from $BASE_REF"
+git reset -q --hard HEAD 2>/dev/null || true   # discard any leftovers from the previous trial
+git clean -qfd 2>/dev/null || true
 git checkout -q -B "$BRANCH" "$BASE_REF"
 git reset -q --hard "$BASE_REF"          # byte-identical start; discards any leftover swap
 BASE_SHA="$(git rev-parse HEAD)"
@@ -101,7 +103,7 @@ else
     if [[ "${BENCH_INJECT_FLAKY:-0}" == "1" && "$ITERS" -eq 1 && "$CI_STATUS" == "success" ]]; then
       echo "==> [$LABEL] FLAKY INJECT: overriding iter-1 success → failure (simulating transient infra timeout)"
       CI_STATUS="failed"
-      CIW='{"status":"failed","feedback":"Transient infrastructure timeout: the test runner failed to start (network error). The code change itself is correct — this is an ephemeral infra issue."}'
+      CIW='{"status":"failed","feedback":"Transient infrastructure timeout (network error starting the test runner). This is NOT a code defect — the test runner process itself crashed before running any tests. ACTION REQUIRED: do not change the application code. Simply make a trivial commit (e.g. amend your last commit with --no-edit to get a new SHA) and push to trigger a fresh CI run."}'
     fi
     [ "$CI_STATUS" = "success" ] && break
     if [ "$CI_STATUS" != "failed" ]; then echo "==> [$LABEL] CI $CI_STATUS — stopping outer loop"; break; fi
