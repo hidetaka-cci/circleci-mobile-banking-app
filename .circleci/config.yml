@@ -55,6 +55,14 @@ jobs:
       - run:
           name: Bundle iOS
           command: cd << parameters.miniapp_path >> && mkdir -p dist/ios/assets && npm run bundle:ios
+      - run:
+          name: Sign iOS bundle
+          command: |
+            if [ -z "${SIGNING_CERT_PASSWORD:-}" ]; then
+              echo "FATAL: SIGNING_CERT_PASSWORD is not set."
+              echo "Add SIGNING_CERT_PASSWORD to the 'ios-signing' CircleCI context."
+              exit 1
+            fi
 
 workflows:
   mobile-banking-pipeline:
