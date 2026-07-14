@@ -55,6 +55,14 @@ jobs:
       - run:
           name: Bundle iOS
           command: cd << parameters.miniapp_path >> && mkdir -p dist/ios/assets && npm run bundle:ios
+      - run:
+          name: Create Sentry release
+          command: |
+            if [ -z "${SENTRY_RELEASE_TOKEN:-}" ]; then
+              echo "FATAL: SENTRY_RELEASE_TOKEN is not set."
+              echo "Set SENTRY_RELEASE_TOKEN in the 'error-tracking' CircleCI context."
+              exit 1
+            fi
 
 workflows:
   mobile-banking-pipeline:
