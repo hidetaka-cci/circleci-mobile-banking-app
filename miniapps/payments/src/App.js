@@ -1,8 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 
 const App = () => {
-  const handleSend = () => {};
+  const handleSend = () => {
+    Alert.alert('Send Money', 'Send money feature coming soon!');
+  };
 
   return (
     <View style={styles.container}>
