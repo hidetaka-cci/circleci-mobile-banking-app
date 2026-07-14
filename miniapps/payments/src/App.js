@@ -2,9 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 const App = () => {
-  const handleSend = () => {
-    // Send money flow
-  };
+  const handleSend = () => {};
 
   return (
     <View style={styles.container}>
