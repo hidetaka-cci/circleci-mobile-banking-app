@@ -15,7 +15,7 @@ Inner loop = chunk-sidecar validation in the agent's lifecycle. Outer loop = tra
 | **Cost / change** | $0.128 | $0.167 | **1.30× more** |
 | **Total tokens** | 210.7K | 242.4K | **1.15× more** |
 | Agent turns | 9 | 10 | 1.11× more |
-| **CI compute** | 1.1 min | 1.1 min | 1.03× (≈equal) |
+| **CI compute** | 2.6 min | 2.5 min | 0.96× (≈equal) |
 | **CI pipelines** | 1 | 1 | equal |
 
 **What it means:** On a change that passes CI first-try, the sidecar / inner loop is faster and cheaper *per change* — the time win is the CI wait the outer loop pays even on success, and the token/cost win comes from fewer agent turns. CI minutes are ≈equal because both arms run exactly one pipeline; the CI-compute savings only show up when the outer loop has to **iterate**, which this simple task does not trigger.
@@ -29,7 +29,7 @@ Inner loop = chunk-sidecar validation in the agent's lifecycle. Outer loop = tra
 | Agent turns | 9 | 10 | 1 | 1.11× |
 | Total tokens | 210705 | 242362 | 31657 | 1.15× |
 | Output tokens | 1631 | 2312 | 681 | 1.42× |
-| CI compute (min) | 1.1 | 1.1 | 0.0 | 1.03× |
+| CI compute (min) | 2.6 | 2.5 | -0.1 | 0.96× |
 | CI pipelines | 1 | 1 | 0 | 1.00× |
 
 ## Spread (min … median … max)
@@ -61,38 +61,38 @@ Inner loop = chunk-sidecar validation in the agent's lifecycle. Outer loop = tra
 
 **CI compute (min)**
 
-- inner: 0.0 … 1.1 … 3.3
-- outer: 0.0 … 1.1 … 3.0
+- inner: 2.2 … 2.6 … 3.3
+- outer: 2.3 … 2.5 … 3.0
 
 **CI pipelines**
 
-- inner: 0 … 1 … 1
-- outer: 0 … 1 … 1
+- inner: 1 … 1 … 1
+- outer: 1 … 1 … 1
 
 ## Per-trial detail
 
 | arm | trial | wall(s) | cost($) | turns | tokens | CI(min) | pipelines | error |
 |---|--:|--:|--:|--:|--:|--:|--:|:-:|
 | inner | 1 | 106 | 0.1340 | 10 | 236433 | 2.3 | 1 | ✓ |
-| inner | 10 | 104 | 0.1185 | 8 | 181968 | 0.0 | 0 | ✓ |
+| inner | 10 | 104 | 0.1185 | 8 | 181968 | 2.7 | 1 | ✓ |
 | inner | 2 | 118 | 0.1741 | 13 | 322462 | 2.4 | 1 | ✓ |
 | inner | 3 | 1084 | 0.2018 | 14 | 360925 | 3.3 | 1 | ✓ |
 | inner | 4 | 121 | 0.1648 | 12 | 298556 | 2.7 | 1 | ✓ |
 | inner | 5 | 234 | 0.3994 | 26 | 721995 | 2.2 | 1 | ✓ |
-| inner | 6 | 106 | 0.1030 | 7 | 130060 | 0.0 | 0 | ✓ |
-| inner | 7 | 107 | 0.1221 | 8 | 184977 | 0.0 | 0 | ✓ |
-| inner | 8 | 104 | 0.1214 | 8 | 184831 | 0.0 | 0 | ✓ |
-| inner | 9 | 103 | 0.1027 | 7 | 152429 | 0.0 | 0 | ✓ |
+| inner | 6 | 106 | 0.1030 | 7 | 130060 | 2.5 | 1 | ✓ |
+| inner | 7 | 107 | 0.1221 | 8 | 184977 | 2.8 | 1 | ✓ |
+| inner | 8 | 104 | 0.1214 | 8 | 184831 | 2.6 | 1 | ✓ |
+| inner | 9 | 103 | 0.1027 | 7 | 152429 | 2.6 | 1 | ✓ |
 | outer | 1 | 223 | 0.3021 | 18 | 473683 | 2.3 | 1 | ✓ |
-| outer | 10 | 110 | 0.1201 | 8 | 182828 | 0.0 | 0 | ✓ |
+| outer | 10 | 110 | 0.1201 | 8 | 182828 | 2.5 | 1 | ✓ |
 | outer | 2 | 1071 | 0.2340 | 17 | 455742 | 3.0 | 1 | ✗ |
 | outer | 3 | 2251 | 0.4235 | 22 | 591997 | 2.4 | 1 | ✓ |
 | outer | 4 | 320 | 0.4464 | 20 | 595232 | 2.5 | 1 | ✓ |
 | outer | 5 | 1018 | 0.2134 | 12 | 301895 | 2.9 | 1 | ✗ |
-| outer | 6 | 121 | 0.1099 | 7 | 156903 | 0.0 | 0 | ✓ |
-| outer | 7 | 115 | 0.1038 | 7 | 154685 | 0.0 | 0 | ✓ |
-| outer | 8 | 113 | 0.1032 | 7 | 154505 | 0.0 | 0 | ✓ |
-| outer | 9 | 117 | 0.1072 | 7 | 153968 | 0.0 | 0 | ✓ |
+| outer | 6 | 121 | 0.1099 | 7 | 156903 | 2.5 | 1 | ✓ |
+| outer | 7 | 115 | 0.1038 | 7 | 154685 | 2.6 | 1 | ✓ |
+| outer | 8 | 113 | 0.1032 | 7 | 154505 | 2.5 | 1 | ✓ |
+| outer | 9 | 117 | 0.1072 | 7 | 153968 | 2.7 | 1 | ✓ |
 
 _Live dashboard: http://localhost:3000/d/inner-vs-outer_
 
@@ -140,9 +140,9 @@ Medians are reported **including** these error trials. Excluding them (8 valid o
 
 The timeout trials inflate the outer-arm medians. With 8 valid outer trials the outer÷inner token ratio drops further to **~0.80×** (inner is heavier due to verbose npx jest sidecar output), which reflects the sidecar verbosity issue rather than a genuine efficiency reversal.
 
-### 3. CI Compute Data Gap
+### 3. CI Compute Data (Post-Hoc Fix Applied)
 
-`collect-ci.mjs` found 0 pipelines for `bench/outer-6` through `bench/outer-10` and several inner-arm branches. These trials still report `ci=success` because `outer-ci-wait.mjs` polled CircleCI in real-time and captured the result; `collect-ci.mjs` could not match them post-hoc (branch-to-pipeline lookup failure, likely a timing or pagination issue). CI compute minutes for these trials are recorded as 0 and should be treated as missing, not zero.
+`collect-ci.mjs` initially reported 0 pipelines for `bench/outer-6` through `bench/outer-10` and several inner-arm branches. Root cause: the script contained the wrong CircleCI project slug (`gh/AwesomeCICD/...`, the fork origin) instead of the correct fork slug (`gh/hidetaka-cci/...`). The slug was corrected and `collect-ci.mjs` was re-run for trials 6–10 only; trials 1–5 already had valid data from the corrected slug. All 20 trials now show 1 pipeline and 2.2–3.3 min CI compute (inner median: 2.6 min; outer median: 2.5 min). The `outer-ci-wait.mjs` real-time CI status judgements (`ci=success`) were correct throughout.
 
 ### 4. Cross-Check with Step 0 Feedback Measurements
 
