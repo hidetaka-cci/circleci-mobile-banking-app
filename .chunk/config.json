@@ -44,7 +44,7 @@
     },
     {
       "name": "test-payments",
-      "run": "cd miniapps/payments && npx jest --ci",
+      "run": "cd miniapps/payments && PAYMENT_REFUND_LIMIT_BP=10000 npx jest --ci",
       "role": "gate",
       "timeout": 120,
       "limit": 3,
