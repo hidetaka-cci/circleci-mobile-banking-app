@@ -1,5 +1,5 @@
-import { calculateRefund, refundSummary } from '../src/lib/refund';
 import { buildPayment } from '../src/lib/payment';
+import { calculateRefund, refundSummary } from '../src/lib/refund';
 
 describe('calculateRefund', () => {
   const flat = { amountCents: 5000, feeCents: 0, totalCents: 5000, card: '•••• 0000' };
@@ -8,7 +8,7 @@ describe('calculateRefund', () => {
     expect(calculateRefund(flat, 'full')).toBe(5000);
   });
 
-  test('partial refund returns half amountCents rounded down', () => {
+  test('partial refund returns half totalCents rounded down', () => {
     expect(calculateRefund(flat, 'partial')).toBe(2500);
   });
 
