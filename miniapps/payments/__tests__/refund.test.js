@@ -20,7 +20,7 @@ describe('calculateRefund', () => {
     expect(() => calculateRefund(flat, 'unknown')).toThrow('unknown reason');
   });
 
-  test('partial refund rounds down for odd amounts', () => {
+  test('partial refund rounds down for odd totalCents', () => {
     const odd = { amountCents: 5001, feeCents: 0, totalCents: 5001, card: '•••• 0000' };
     expect(calculateRefund(odd, 'partial')).toBe(2500);
   });
